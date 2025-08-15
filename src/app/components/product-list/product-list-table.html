@@ -10,9 +10,8 @@
 
    <tbody>
     <tr *ngFor="let tmpProduct of products()">
-        <td>
-            <img [src]="tmpProduct.imageUrl || 'assets/images/products/placeholder.png'" alt="{{ tmpProduct.name }}" />
-
+        <td class="align-middle">
+           <img src="{{ tmpProduct.imageUrl }}" height="50">
         </td>
         <td>{{ tmpProduct.name }}</td>
         <td>{{ tmpProduct.unitPrice | currency:'USD' }}</td>
