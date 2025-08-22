@@ -16,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 export class ProductList {
   products = signal<Product[]>([]);
   currentCategoryId: number = 1;
+  searchMode: boolean = false;
 
   constructor(private productService: ProductService,
     private route: ActivatedRoute) { }
@@ -27,6 +28,24 @@ export class ProductList {
   }
 
   private listProducts() {
+    this.searchMode = this.route.snapshot.paramMap.has('keyword');
+
+    if (this.searchMode) {
+      this.handleSearchProducts();
+    } else {
+      this.handleListProducts();
+    }
+  }
+
+  handleSearchProducts() {
+    const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
+    this.productService.searchProducts(theKeyword).subscribe({
+      next: data => this.products.set(data),
+      error: err => console.error('HTTP Error:', err)
+    });
+  }
+
+  handleListProducts() {
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
     if (hasCategoryId) {
       this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
@@ -39,4 +58,5 @@ export class ProductList {
       error: err => console.error('HTTP Error:', err)
     });
   }
+
 }
