@@ -22,8 +22,10 @@ export class ProductList {
 
   //Pagination
   thePageNumber: number = 1;
-  thePageSize: number = 10;
+  thePageSize: number = 5;
   theTotalElements: number = 0;
+
+  previousKeyword: string = "";
  
 
   constructor(private productService: ProductService,
@@ -47,10 +49,26 @@ export class ProductList {
 
   handleSearchProducts() {
     const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
-    this.productService.searchProducts(theKeyword).subscribe({
-      next: data => this.products.set(data),
+    
+    if (this.previousKeyword != theKeyword) {
+      this.thePageNumber = 1;
+    } 
+  
+    this.previousKeyword = theKeyword;
+
+    console.log(`theKeyword=${theKeyword}, thePAgeNumber=${this.thePageNumber}`);
+
+    this.productService.searchProductsPaginate(this.thePageNumber-1, 
+                                              this.thePageSize,  
+                                              theKeyword).subscribe({
+      next: data => { this.products.set(data._embedded.products);
+                      this.thePageNumber = data.page.number + 1;
+                      this.thePageSize = data.page.size;
+                      this.theTotalElements = data.page.totalElements;
+       },
       error: err => console.error('HTTP Error:', err)
     });
+ 
   }
 
   handleListProducts() {
