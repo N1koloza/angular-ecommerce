@@ -10,10 +10,24 @@ import { ProductCategory } from '../common/product-category';
 export class ProductService {
 
 
-  private baseUrl = 'http://localhost:8080/api/products';
-  private categoryUrl = 'http://localhost:8080/api/product-category';
+  private baseUrl = 'http://localhost:9090/api/products';
+  private categoryUrl = 'http://localhost:9090/api/product-category';
 
   constructor(private httpClient: HttpClient) { }
+
+
+  getProductListPaginate(thePage: number, 
+                        thePageSize: number, 
+                        theCategoryId: number): Observable<GetResponseProducts> {
+
+    const searchUrl = `${this.baseUrl}/search/findByCategoryId?id=${theCategoryId}`
+                    + `&page=${thePage}&size=${thePageSize}`;
+    
+    console.log(`searchURL: ${searchUrl}` );
+    
+                    
+    return this.httpClient.get<GetResponseProducts>(searchUrl);
+  }
 
   getProductList(theCategoryId: number): Observable<Product[]> {
 
@@ -52,6 +66,12 @@ export class ProductService {
 interface GetResponseProducts {
   _embedded: {
     products: Product[]
+  },
+  page: {
+    size: number,
+    totalElements: number,
+    totalPages: number,
+    number: number
   }
 }
 
