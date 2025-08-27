@@ -4,6 +4,8 @@ import { Product } from '../../common/product';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { CartItem } from '../../common/cart-item';
+import { CartSevice } from '../../services/cart-sevice';
 
 
 @Component({
@@ -27,9 +29,10 @@ export class ProductList {
   theTotalElements: number = 0;
 
   previousKeyword: string = "";
- 
+
 
   constructor(private productService: ProductService,
+    private cartService: CartSevice,
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
@@ -50,26 +53,27 @@ export class ProductList {
 
   handleSearchProducts() {
     const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
-    
+
     if (this.previousKeyword != theKeyword) {
       this.thePageNumber = 1;
-    } 
-  
+    }
+
     this.previousKeyword = theKeyword;
 
     console.log(`theKeyword=${theKeyword}, thePAgeNumber=${this.thePageNumber}`);
 
-    this.productService.searchProductsPaginate(this.thePageNumber-1, 
-                                              this.thePageSize,  
-                                              theKeyword).subscribe({
-      next: data => { this.products.set(data._embedded.products);
-                      this.thePageNumber = data.page.number + 1;
-                      this.thePageSize = data.page.size;
-                      this.theTotalElements = data.page.totalElements;
-       },
-      error: err => console.error('HTTP Error:', err)
-    });
- 
+    this.productService.searchProductsPaginate(this.thePageNumber - 1,
+      this.thePageSize,
+      theKeyword).subscribe({
+        next: data => {
+          this.products.set(data._embedded.products);
+          this.thePageNumber = data.page.number + 1;
+          this.thePageSize = data.page.size;
+          this.theTotalElements = data.page.totalElements;
+        },
+        error: err => console.error('HTTP Error:', err)
+      });
+
   }
 
   handleListProducts() {
@@ -87,21 +91,24 @@ export class ProductList {
     this.previousCategoryId = this.currentCategoryId;
     console.log(`currentCategoryId=${this.currentCategoryId}, thePAgeNumber=${this.thePageNumber}`);
 
-    this.productService.getProductListPaginate(this.thePageNumber-1, 
-                                              this.thePageSize,  
-                                              this.currentCategoryId).subscribe({
-      next: data => { this.products.set(data._embedded.products);
-                      this.thePageNumber = data.page.number + 1;
-                      this.thePageSize = data.page.size;
-                      this.theTotalElements = data.page.totalElements;
-       },
-      error: err => console.error('HTTP Error:', err)
-    });
+    this.productService.getProductListPaginate(this.thePageNumber - 1,
+      this.thePageSize,
+      this.currentCategoryId).subscribe({
+        next: data => {
+          this.products.set(data._embedded.products);
+          this.thePageNumber = data.page.number + 1;
+          this.thePageSize = data.page.size;
+          this.theTotalElements = data.page.totalElements;
+        },
+        error: err => console.error('HTTP Error:', err)
+      });
   }
 
-  addToCart(product : Product) {
-    console.log(`${product.name}`);
-    
+  addToCart(product: Product) {
+    const theCartItem = new CartItem(product);
+
+    this.cartService.addToCart(theCartItem);
+
   }
 
 }
