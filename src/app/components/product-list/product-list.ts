@@ -15,6 +15,7 @@ import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 })
 
 export class ProductList {
+
   products = signal<Product[]>([]);
   currentCategoryId: number = 1;
   previousCategoryId: number = 1;
@@ -96,6 +97,11 @@ export class ProductList {
        },
       error: err => console.error('HTTP Error:', err)
     });
+  }
+
+  addToCart(product : Product) {
+    console.log(`${product.name}`);
+    
   }
 
 }
