@@ -1,8 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Product } from '../../common/product';
 import { ProductService } from '../../services/product-service';
 import { CommonModule } from '@angular/common';
+import { CartItem } from '../../common/cart-item';
+import { CartSevice } from '../../services/cart-sevice';
 
 @Component({
   selector: 'app-product-details',
@@ -12,11 +14,12 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./product-details.css']
 })
 export class ProductDetails {
-  // ✅ product is now a signal
+
   product = signal<Product | null>(null);
 
   constructor(
     private productService: ProductService,
+    private cartService: CartSevice,
     private route: ActivatedRoute
   ) {}
 
@@ -26,10 +29,17 @@ export class ProductDetails {
     });
   }
 
+  addToCart() {
+    const theCartItem = new CartItem(this.product()!);
+    this.cartService.addToCart(theCartItem);
+  }
+
   handleProductDetails() {
     const theProductId: number = +this.route.snapshot.paramMap.get('id')!;
     this.productService.getProduct(theProductId).subscribe(data => {
-      this.product.set(data);   // ✅ update signal instead of assignment
+      this.product.set(data);  
     });
   }
+
+ 
 }

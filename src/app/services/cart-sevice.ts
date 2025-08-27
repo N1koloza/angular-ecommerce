@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class CartSevice {
-cartItems: CartItem[] = [];
+  cartItems: CartItem[] = [];
 
   totalPrice: Subject<number> = new Subject<number>();
   totalQuantity: Subject<number> = new Subject<number>();
@@ -19,17 +19,14 @@ cartItems: CartItem[] = [];
 
 
     if (this.cartItems.length > 0) {
-      for (let tempCartItem of this.cartItems) {
-        if (tempCartItem === theCartItem) {
-          existingCartItem = tempCartItem;
-          break;
-        }
-      }
+
+      existingCartItem = this.cartItems.find(tempCartItem => tempCartItem.id === theCartItem.id);
+
       alreadyExistsInCart = (existingCartItem != undefined);
     }
 
     if (alreadyExistsInCart && existingCartItem != undefined) {
-       existingCartItem.quantity++;
+      existingCartItem.quantity++;
     } else {
       this.cartItems.push(theCartItem);
     }
