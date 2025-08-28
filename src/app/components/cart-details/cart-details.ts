@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-cart-details',
-   imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './cart-details.html',
   styleUrl: './cart-details.css'
 })
@@ -46,5 +46,15 @@ export class CartDetails {
     this.cartService.computeCartTotals();
 
   }
+
+
+  decrementQuantity(theCartItem: CartItem) {
+     this.cartService.decrementQuantity(theCartItem);
+  }
+
+  incrementQuantity(theCartItem: CartItem) {
+    this.cartService.addToCart(theCartItem);
+  }
+
 
 }
