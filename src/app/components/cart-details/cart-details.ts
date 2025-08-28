@@ -13,8 +13,6 @@ import { CommonModule } from '@angular/common';
 })
 export class CartDetails {
 
-  //cartItems: CartItem[] = [];
-
   cartItems = signal<CartItem[]>([]);
   totalPrice: number = 0.00;
   totalQuantity: number = 0;
@@ -49,12 +47,15 @@ export class CartDetails {
 
 
   decrementQuantity(theCartItem: CartItem) {
-     this.cartService.decrementQuantity(theCartItem);
+    this.cartService.decrementQuantity(theCartItem);
   }
 
   incrementQuantity(theCartItem: CartItem) {
     this.cartService.addToCart(theCartItem);
   }
 
+  remove(theCartItem: CartItem) {
+    this.cartService.remove(theCartItem);
+  }
 
 }
