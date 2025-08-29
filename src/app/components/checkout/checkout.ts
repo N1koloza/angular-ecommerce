@@ -1,15 +1,18 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-checkout',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css'
 })
 export class Checkout {
 
   checkoutFormGroup!: FormGroup;
+  totalPrice: number = 0.00;
+  totalQuantity: number = 0;
 
   constructor(private formBuilder: FormBuilder) {
 
@@ -59,8 +62,7 @@ export class Checkout {
   }
 
   onSubmit() {
-    console.log(this.checkoutFormGroup.get('customer')?.value);
-    console.log(this.checkoutFormGroup.value.sameAsShipping);
+    console.log(JSON.stringify(this.checkoutFormGroup.value, null, 2));
   }
 
 onChange() {
