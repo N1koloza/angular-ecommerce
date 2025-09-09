@@ -71,7 +71,14 @@ export class ProductList {
           this.thePageSize = data.page.size;
           this.theTotalElements = data.page.totalElements;
         },
-        error: err => console.error('HTTP Error:', err)
+
+        error: (err) => {
+          if (err.status === 500) {
+            console.error("Database is not running. Please contact admin.");
+          } else {
+            console.error('HTTP Error:', err)
+          }
+        }
       });
 
   }
@@ -100,7 +107,13 @@ export class ProductList {
           this.thePageSize = data.page.size;
           this.theTotalElements = data.page.totalElements;
         },
-        error: err => console.error('HTTP Error:', err)
+        error: (err) => {
+          if (err.status === 500) {
+            console.error("Database is not running. Please contact admin.");
+          } else {
+            console.error('HTTP Error:', err)
+          }
+        }
       });
   }
 
