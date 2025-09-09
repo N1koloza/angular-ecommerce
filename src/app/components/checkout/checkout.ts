@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ShopFormService } from '../../services/shop-form-service';
+import { Country } from '../../common/country';
+import { State } from '../../common/state';
 
 
 @Component({
@@ -17,6 +19,10 @@ export class Checkout {
   totalQuantity: number = 0;
   creditCardYears: number[] = [];
   creditCardMonths: number[] = [];
+
+  countries = signal<Country[]>([]);
+  theShippingStates = signal<State[]>([]);
+  theBillingStates = signal<State[]>([]);
 
   constructor(private formBuilder: FormBuilder,
     private shopFormService: ShopFormService) { }
@@ -65,26 +71,34 @@ export class Checkout {
 
     // populate credit card months and years
     const startMonth: number = new Date().getMonth() + 1;
-    console.log("startMonth: " + startMonth);
 
     this.shopFormService.getCreditCardMonths(startMonth).subscribe(
       data => {
         console.log("Retrieved months data: " + JSON.stringify(data));
         this.creditCardMonths = data;
       }
-    )
+    );
 
     this.shopFormService.getCreditCardYears().subscribe(
       data => {
         console.log("Retrieved years data: " + JSON.stringify(data));
         this.creditCardYears = data;
       }
-    )
+    );
+
+    this.shopFormService.getCountries().subscribe(
+      data => {
+        console.log("Retrieved countries: " + JSON.stringify(data));
+        this.countries.set(data);
+      });
 
   }
 
   onSubmit() {
     console.log(JSON.stringify(this.checkoutFormGroup.value, null, 2));
+
+    console.log("The shipping addr. country is : " + this.checkoutFormGroup.get('shippingAddress')?.value.country.name);
+    console.log("The shipping addr. state is : " + this.checkoutFormGroup.get('shippingAddress')?.value.state.name);
   }
 
   onChange() {
@@ -92,8 +106,11 @@ export class Checkout {
       const shipping = this.checkoutFormGroup.get('shippingAddress')?.value;
       this.checkoutFormGroup.get('billingAddress')?.setValue(shipping);
       console.log(this.checkoutFormGroup.get('customer')?.value);
+
+      this.theBillingStates = this.theShippingStates;
     } else {
       this.checkoutFormGroup.get('billingAddress')?.reset();
+
     }
   }
 
@@ -120,5 +137,34 @@ export class Checkout {
 
   }
 
+  getStates(formGroupName: string) {
+    const formGroup = this.checkoutFormGroup.get(formGroupName);
+    const countryCode = formGroup?.value.country.code;
+    const countryName = formGroup?.value.country.name;
+
+    console.log(`${formGroupName} country code: ${countryCode}`);
+    console.log(`${formGroupName} country name: ${countryName}`);
+
+    this.shopFormService.getStates(countryCode).subscribe(
+      data => {
+
+        if (formGroupName === 'shippingAddress') {
+
+          console.log("Retrieved theShippingStates: " + JSON.stringify(data));
+          this.theShippingStates.set(data);
+        } else {
+
+          console.log("Retrieved theBillingStates: " + JSON.stringify(data));
+          this.theBillingStates.set(data);
+        }
+
+        if (formGroup?.get('state')) {
+          formGroup.get('state')!.setValue(data[0]);
+        }
+
+      });
+
+
+  }
 
 }
