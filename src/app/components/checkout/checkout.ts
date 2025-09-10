@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ShopFormService } from '../../services/shop-form-service';
 import { Country } from '../../common/country';
 import { State } from '../../common/state';
@@ -32,9 +32,9 @@ export class Checkout {
       {
         customer: this.formBuilder.group(
           {
-            firstName: [''],
-            lastName: [''],
-            email: ['']
+            firstName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+            lastName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+            email: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}')])
           }
         ),
         shippingAddress: this.formBuilder.group(
@@ -99,6 +99,10 @@ export class Checkout {
 
     console.log("The shipping addr. country is : " + this.checkoutFormGroup.get('shippingAddress')?.value.country.name);
     console.log("The shipping addr. state is : " + this.checkoutFormGroup.get('shippingAddress')?.value.state.name);
+
+    if(this.checkoutFormGroup.invalid){
+      this.checkoutFormGroup.markAllAsTouched(); // touching all fields triggers the display of the error messages
+    }
   }
 
   onChange() {
@@ -166,5 +170,91 @@ export class Checkout {
 
 
   }
+
+  // Customer
+  get firstName() {
+    return this.checkoutFormGroup.get('customer.firstName');
+  }
+
+  get lastName() {
+    return this.checkoutFormGroup.get('customer.lastName');
+  }
+
+  get email() {
+    return this.checkoutFormGroup.get('customer.email');
+  }
+
+  // Shipping Address
+  get shippingStreet() {
+    return this.checkoutFormGroup.get('shippingAddress.street');
+  }
+
+  get shippingCity() {
+    return this.checkoutFormGroup.get('shippingAddress.city');
+  }
+
+  get shippingState() {
+    return this.checkoutFormGroup.get('shippingAddress.state');
+  }
+
+  get shippingCountry() {
+    return this.checkoutFormGroup.get('shippingAddress.country');
+  }
+
+  get shippingZipCode() {
+    return this.checkoutFormGroup.get('shippingAddress.zipCode');
+  }
+
+  // Same As Shipping (boolean checkbox)
+  get sameAsShipping() {
+    return this.checkoutFormGroup.get('sameAsShipping');
+  }
+
+  // Billing Address
+  get billingStreet() {
+    return this.checkoutFormGroup.get('billingAddress.street');
+  }
+
+  get billingCity() {
+    return this.checkoutFormGroup.get('billingAddress.city');
+  }
+
+  get billingState() {
+    return this.checkoutFormGroup.get('billingAddress.state');
+  }
+
+  get billingCountry() {
+    return this.checkoutFormGroup.get('billingAddress.country');
+  }
+
+  get billingZipCode() {
+    return this.checkoutFormGroup.get('billingAddress.zipCode');
+  }
+
+  // Credit Card
+  get cardType() {
+    return this.checkoutFormGroup.get('creditCard.cardType');
+  }
+
+  get nameOnCard() {
+    return this.checkoutFormGroup.get('creditCard.nameOnCard');
+  }
+
+  get cardNumber() {
+    return this.checkoutFormGroup.get('creditCard.cardNumber');
+  }
+
+  get securityCode() {
+    return this.checkoutFormGroup.get('creditCard.securityCode');
+  }
+
+  get expirationMonth() {
+    return this.checkoutFormGroup.get('creditCard.expirationMonth');
+  }
+
+  get expirationYear() {
+    return this.checkoutFormGroup.get('creditCard.expirationYear');
+  }
+
 
 }
