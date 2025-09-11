@@ -34,27 +34,27 @@ export class Checkout {
         customer: this.formBuilder.group(
           {
             firstName: new FormControl('', [Validators.required, Validators.minLength(2), ShopValidators.notOnlyWhitespace]),
-            lastName:  new FormControl('', [Validators.required, Validators.minLength(2), ShopValidators.notOnlyWhitespace]),
+            lastName: new FormControl('', [Validators.required, Validators.minLength(2), ShopValidators.notOnlyWhitespace]),
             email: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}')])
           }
         ),
         shippingAddress: this.formBuilder.group(
           {
-            street: [''],
-            city: [''],
-            state: [''],
-            country: [''],
-            zipCode: ['']
+            street: new FormControl('', [Validators.required, ShopValidators.notOnlyWhitespace]),
+            city: new FormControl('', [Validators.required, ShopValidators.notOnlyWhitespace]),
+            state: new FormControl('', [Validators.required]),
+            country: new FormControl('', [Validators.required]),
+            zipCode: new FormControl('', [Validators.required, ShopValidators.notOnlyWhitespace])
           }
         ),
         sameAsShipping: [false],
         billingAddress: this.formBuilder.group(
           {
-            street: [''],
-            city: [''],
-            state: [''],
-            country: [''],
-            zipCode: ['']
+            street: new FormControl('', [Validators.required, ShopValidators.notOnlyWhitespace]),
+            city: new FormControl('', [Validators.required, ShopValidators.notOnlyWhitespace]),
+            state: new FormControl('', [Validators.required]),
+            country: new FormControl('', [Validators.required]),
+            zipCode: new FormControl('', [Validators.required, ShopValidators.notOnlyWhitespace])
           }
         ),
         creditCard: this.formBuilder.group(
@@ -101,7 +101,7 @@ export class Checkout {
     console.log("The shipping addr. country is : " + this.checkoutFormGroup.get('shippingAddress')?.value.country.name);
     console.log("The shipping addr. state is : " + this.checkoutFormGroup.get('shippingAddress')?.value.state.name);
 
-    if(this.checkoutFormGroup.invalid){
+    if (this.checkoutFormGroup.invalid) {
       this.checkoutFormGroup.markAllAsTouched(); // touching all fields triggers the display of the error messages
     }
   }
