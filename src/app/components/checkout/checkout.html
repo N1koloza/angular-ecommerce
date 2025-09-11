@@ -259,7 +259,7 @@
                             <div class="input-space">
                                 <input formControlName="zipCode" type="text">
 
-                                 <div *ngIf="billingZipCode?.invalid && (billingZipCode?.dirty || billingZipCode?.touched)"
+                                <div *ngIf="billingZipCode?.invalid && (billingZipCode?.dirty || billingZipCode?.touched)"
                                     class="alert alert-danger mt-1">
                                     <div
                                         *ngIf="billingZipCode?.errors?.['required'] || billingZipCode?.errors?.['notOnlyWhitespace'] ">
@@ -282,10 +282,18 @@
                         <div class="col-md-9">
                             <div class="input-space">
                                 <select formControlName="cardType">
-                                    <option value="">Visa</option>
-                                    <option value="">Master</option>
-                                    <option value="">PayPal</option>
+                                    <option value="">-- Select Card Type --</option>
+                                    <option value="VISA">Visa</option>
+                                    <option value="MASTER">Master</option>                             
                                 </select>
+                                <div *ngIf="cardType?.invalid && (cardType?.dirty || cardType?.touched)"
+                                    class="alert alert-danger mt-1">
+                                    <div
+                                        *ngIf="cardType?.errors?.['required'] || cardType?.errors?.['notOnlyWhitespace'] ">
+                                        Card Type is required!
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -296,6 +304,14 @@
                             <div class="input-space">
                                 <input formControlName="nameOnCard" type="text">
                             </div>
+
+                            <div *ngIf="nameOnCard?.invalid && (nameOnCard?.dirty || nameOnCard?.touched)"
+                                class="alert alert-danger mt-1">
+                                <div
+                                    *ngIf="nameOnCard?.errors?.['required'] || nameOnCard?.errors?.['notOnlyWhitespace'] ">
+                                    Name on card is required!
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -304,6 +320,16 @@
                         <div class="col-md-9">
                             <div class="input-space">
                                 <input formControlName="cardNumber" type="text">
+                                <div *ngIf="cardNumber?.invalid && (cardNumber?.dirty || cardNumber?.touched)"
+                                    class="alert alert-danger mt-1">
+                                    <div
+                                        *ngIf="cardNumber?.errors?.['required'] || cardNumber?.errors?.['notOnlyWhitespace'] ">
+                                        Card number is required!
+                                    </div>
+                                    <div *ngIf="cardNumber?.errors?.['pattern']">
+                                        Card Number must be 16 digits long!
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -313,6 +339,17 @@
                         <div class="col-md-9">
                             <div class="input-space">
                                 <input formControlName="securityCode" type="text">
+                                <div *ngIf="securityCode?.invalid && (securityCode?.dirty || securityCode?.touched)"
+                                    class="alert alert-danger mt-1">
+                                    <div
+                                        *ngIf="securityCode?.errors?.['required'] || securityCode?.errors?.['notOnlyWhitespace'] ">
+                                        Security Code is required!
+                                    </div>
+                                    <div *ngIf="securityCode?.errors?.['pattern']">
+                                        Security Code be 3 digits long!
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
