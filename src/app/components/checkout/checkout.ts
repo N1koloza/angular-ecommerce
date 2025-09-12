@@ -5,6 +5,7 @@ import { ShopFormService } from '../../services/shop-form-service';
 import { Country } from '../../common/country';
 import { State } from '../../common/state';
 import { ShopValidators } from '../../validators/shop-validators';
+import { CartSevice } from '../../services/cart-sevice';
 
 
 @Component({
@@ -26,9 +27,13 @@ export class Checkout {
   theBillingStates = signal<State[]>([]);
 
   constructor(private formBuilder: FormBuilder,
-    private shopFormService: ShopFormService) { }
+              private shopFormService: ShopFormService,
+              private cartService: CartSevice) { }
 
   ngOnInit(): void {
+
+    this.reviewCartDetails();
+
     this.checkoutFormGroup = this.formBuilder.group(
       {
         customer: this.formBuilder.group(
@@ -93,6 +98,21 @@ export class Checkout {
         this.countries.set(data);
       });
 
+  }
+
+  reviewCartDetails() {
+    // subscribe to cartService.totalQuantity and totalPrice
+    this.cartService.totalPrice.subscribe(
+      (data: number) => {
+        this.totalPrice = data;
+      }
+    );
+    // subscribe to the cart totalQuantity
+    this.cartService.totalQuantity.subscribe(
+      (data: number) => {
+        this.totalQuantity = data;
+      }
+    );
   }
 
   onSubmit() {
