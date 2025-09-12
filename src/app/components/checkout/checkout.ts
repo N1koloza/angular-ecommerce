@@ -6,6 +6,11 @@ import { Country } from '../../common/country';
 import { State } from '../../common/state';
 import { ShopValidators } from '../../validators/shop-validators';
 import { CartSevice } from '../../services/cart-sevice';
+import { CheckoutService } from '../../services/checkout-service';
+import { Router } from '@angular/router';
+import { Order } from '../../common/order';
+import { OrderItem } from '../../common/order-item';
+import { Purchase } from '../../common/purchase';
 
 
 @Component({
@@ -27,8 +32,10 @@ export class Checkout {
   theBillingStates = signal<State[]>([]);
 
   constructor(private formBuilder: FormBuilder,
-              private shopFormService: ShopFormService,
-              private cartService: CartSevice) { }
+    private shopFormService: ShopFormService,
+    private cartService: CartSevice,
+    private checkoutService: CheckoutService,
+    private router: Router) { }
 
   ngOnInit(): void {
 
@@ -116,14 +123,67 @@ export class Checkout {
   }
 
   onSubmit() {
-    console.log(JSON.stringify(this.checkoutFormGroup.value, null, 2));
-
-    console.log("The shipping addr. country is : " + this.checkoutFormGroup.get('shippingAddress')?.value.country.name);
-    console.log("The shipping addr. state is : " + this.checkoutFormGroup.get('shippingAddress')?.value.state.name);
 
     if (this.checkoutFormGroup.invalid) {
       this.checkoutFormGroup.markAllAsTouched(); // touching all fields triggers the display of the error messages
+      return;
     }
+
+    // set up order
+    let order = new Order();
+    order.totalPrice = this.totalPrice;
+    order.totalQuantity = this.totalQuantity;
+
+    // get cart items
+    const cartItems = this.cartService.cartItems;
+    // create orderItems from cartItems
+    let orderItems: OrderItem[] = cartItems().map(tempCartItem => new OrderItem(tempCartItem));
+
+    // let orderItems: OrderItem[] = [];
+    // let items = cartItems();
+    // for (let index = 0; index < cartItems.length; index++) {
+    //   orderItems[index] = new OrderItem(items[index]);
+
+    // }
+
+    // set up purchase
+    let purchase = new Purchase();
+    // populate purchase - customer
+    purchase.customer = this.checkoutFormGroup.controls['customer'].value;
+
+    // populate purchase - shipping address
+    purchase.shippingAddress = this.checkoutFormGroup.controls['shippingAddress'].value;
+    const shippingState: State = JSON.parse(JSON.stringify(purchase.shippingAddress.state));
+    const shippingCountry: Country = JSON.parse(JSON.stringify(purchase.shippingAddress.country));
+    purchase.shippingAddress.state = shippingState.name;
+    purchase.shippingAddress.country = shippingCountry.name;
+    // populate purchase - billing address
+    purchase.billingAddress = this.checkoutFormGroup.controls['billingAddress'].value;
+    const billingState: State = JSON.parse(JSON.stringify(purchase.billingAddress.state));
+    const billingCountry: Country = JSON.parse(JSON.stringify(purchase.billingAddress.country));
+    purchase.billingAddress.state = billingState.name;
+    purchase.billingAddress.country = billingCountry.name;
+    // populate purchase - order and orderItems
+    purchase.order = order;
+    purchase.orderItems = orderItems;
+
+    // compute payment info
+    // call REST API via the CheckoutService
+    this.checkoutService.placeOrder(purchase).subscribe(
+      {
+        // happy / success
+        next: (responseFromBackend) => {
+          alert(`Your order has been received.\nOrder tracking number: ${responseFromBackend.orderTrackingNumber}`);
+          // reset cart
+          this.resetCart();
+        },
+        error: (err) => {
+          alert(`There was an error: ${err.messages}`);
+        }
+      }
+    );
+
+
   }
 
   onChange() {
@@ -137,6 +197,20 @@ export class Checkout {
       this.checkoutFormGroup.get('billingAddress')?.reset();
 
     }
+  }
+
+  resetCart() {
+    // reset cart data
+    this.cartService.cartItems.set([]);   // reset signal to empty array
+    this.cartService.totalPrice.next(0); // reset BehaviorSubject/Observable
+    this.cartService.totalQuantity.next(0); // reset BehaviorSubject/Observable
+    //this.cartService.persistCartItems();
+
+    // reset the form
+    this.checkoutFormGroup.reset();
+
+    // navigate back to the products page
+    this.router.navigateByUrl("/products");
   }
 
   handleMonthesAndYears() {
