@@ -1,0 +1,14 @@
+<div class="cart-area d-n">
+    <div *ngIf="auth.isAuthenticated$ | async; else loggedOut" class="login-status">
+        <p>✅ Logged in as: {{ (auth.user$ | async)?.name }}</p>
+        <button (click)="logout()" class="security-btn">Logout</button>
+    </div>
+
+    <ng-template #loggedOut>
+        <div class="login-status">
+            <button (click)="login()" class="security-btn">Login</button>
+        </div>
+    </ng-template>
+
+
+</div>

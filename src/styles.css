@@ -18,7 +18,7 @@ body{
     font-weight:400;
     font-size:16px;
     line-height:1.625;
-    color:#666;
+    color:#665;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale
 }
@@ -227,7 +227,7 @@ input.au-input.au-input-xl{
     line-height:43px;
     border:1px solid #e5e5e5;
     font-size:14px;
-    color:#666;
+    color:#665;
     padding:0 17px;
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
