@@ -1,14 +1,13 @@
 <div class="cart-area d-n">
-    <div *ngIf="auth.isAuthenticated$ | async; else loggedOut" class="login-status">
-        <p>✅ Logged in as: {{ (auth.user$ | async)?.name }}</p>
-        <button (click)="logout()" class="security-btn">Logout</button>
-    </div>
+  <div class="login-status">
+    <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+      <p>Logged in as: {{ (auth.user$ | async)?.name }}</p>
+      <button (click)="logout()" class="security-btn">Logout</button>
+      <button routerLink="/members" class="security-btn">Member</button>
+    </ng-container>
 
     <ng-template #loggedOut>
-        <div class="login-status">
-            <button (click)="login()" class="security-btn">Login</button>
-        </div>
+      <button (click)="login()" class="security-btn">Login</button>
     </ng-template>
-
-
+  </div>
 </div>
