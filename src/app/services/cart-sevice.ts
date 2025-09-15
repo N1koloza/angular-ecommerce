@@ -6,15 +6,33 @@ import { BehaviorSubject, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class CartSevice {
-  
-  //cartItems: CartItem[] = [];
+
   cartItems = signal<CartItem[]>([]);
+  private readonly CART_KEY = 'cartItems';
 
 
   totalPrice: Subject<number> = new BehaviorSubject<number>(0);
   totalQuantity: Subject<number> = new BehaviorSubject<number>(0);
 
-  constructor() { }
+  //storage: Storage = sessionStorage;
+  storage: Storage = localStorage;
+
+  constructor() {
+    const raw = this.storage.getItem(this.CART_KEY);
+    const data = raw ? JSON.parse(raw) : [];
+    this.cartItems.set(data);
+
+    this.computeCartTotals();
+  }
+
+  persistCartItems() {
+    try {
+      this.storage.setItem(this.CART_KEY, JSON.stringify(this.cartItems()));
+    } catch (e) {
+      console.error("Failed to persist cart items:", e);
+    }
+
+  }
 
   // addToCart(theCartItem: CartItem) {
   //   let alreadyExistsInCart: boolean = false;
@@ -39,22 +57,22 @@ export class CartSevice {
   // }
 
   addToCart(theCartItem: CartItem) {
-  this.cartItems.update(items => {
-    // Check if item already exists
-    const existingCartItem = items.find(item => item.id === theCartItem.id);
+    this.cartItems.update(items => {
+      // Check if item already exists
+      const existingCartItem = items.find(item => item.id === theCartItem.id);
 
-    if (existingCartItem) {
-      // If exists, increase quantity
-      existingCartItem.quantity++;
-      return [...items]; // return a new array reference
-    } else {
-      // If not exists, add it
-      return [...items, theCartItem];
-    }
-  });
+      if (existingCartItem) {
+        // If exists, increase quantity
+        existingCartItem.quantity++;
+        return [...items]; // return a new array reference
+      } else {
+        // If not exists, add it
+        return [...items, theCartItem];
+      }
+    });
 
-  this.computeCartTotals();
-}
+    this.computeCartTotals();
+  }
 
   computeCartTotals() {
     let totalPriceValue: number = 0;
@@ -70,6 +88,9 @@ export class CartSevice {
     this.totalQuantity.next(totalQuantityValue);
 
     this.logCartData(totalPriceValue, totalQuantityValue);
+
+    // persist cart data
+    this.persistCartItems();
   }
 
   logCartData(totalPriceValue: number, totalQuantityValue: number) {
@@ -89,17 +110,17 @@ export class CartSevice {
 
     if (theCartItem.quantity === 0) {
       this.remove(theCartItem);
-    }else{
+    } else {
       this.computeCartTotals();
     }
   }
 
   remove(theCartItem: CartItem) {
     let itemId: number = theCartItem.id;
-    this.cartItems.update(items => 
+    this.cartItems.update(items =>
       items.filter(item => item.id !== itemId)
     );
-    
+
   }
 }
 
