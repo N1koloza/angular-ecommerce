@@ -1,0 +1,35 @@
+import { Component, OnInit } from '@angular/core';
+import { OrderHistory } from '../../common/order-history';
+import { OrderHistoryService } from '../../services/order-history-service';
+
+@Component({
+  selector: 'app-order-history-comp',
+  imports: [],
+  templateUrl: './order-history-comp.html',
+  styleUrl: './order-history-comp.css'
+})
+export class OrderHistoryComp implements OnInit {
+
+  orderHistoryList: OrderHistory[] = [];
+  storage: Storage = sessionStorage;
+
+  private readonly USER_EMAIL_KEY = 'userEmail';
+
+  constructor(public orderHistoryService: OrderHistoryService) {
+  }
+
+  ngOnInit(): void {
+    this.handleOrderHistory();
+  }
+
+  handleOrderHistory() {
+    const raw = this.storage.getItem(this.USER_EMAIL_KEY);
+    const data = raw ? JSON.parse(raw) : [];
+    const theEmail = data;
+
+    this.orderHistoryService.getOrderHistory(theEmail).subscribe(
+      data => { this.orderHistoryList = data._embedded.orders; }
+    );
+  }
+
+}
