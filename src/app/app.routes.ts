@@ -6,8 +6,10 @@ import { CartDetails } from './components/cart-details/cart-details';
 import { Checkout } from './components/checkout/checkout';
 import { MembersPage } from './components/members-page/members-page';
 import { AuthGuard } from '@auth0/auth0-angular';
+import { OrderHistoryComp } from './components/order-history-comp/order-history-comp';
 
 export const routes: Routes = [
+    { path: 'order-history', component: OrderHistoryComp, canActivate: [AuthGuard] },
     { path: 'members', component: MembersPage, canActivate: [AuthGuard] },
     { path: 'checkout', component: Checkout },
     { path: 'cart-details', component: CartDetails },

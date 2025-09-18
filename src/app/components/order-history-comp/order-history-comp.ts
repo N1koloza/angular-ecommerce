@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { OrderHistory } from '../../common/order-history';
 import { OrderHistoryService } from '../../services/order-history-service';
 import { CommonModule } from '@angular/common';
@@ -11,7 +11,8 @@ import { CommonModule } from '@angular/common';
 })
 export class OrderHistoryComp implements OnInit {
 
-  orderHistoryList: OrderHistory[] = [];
+
+  orderHistoryList = signal<OrderHistory[]>([]);
   storage: Storage = sessionStorage;
 
   private readonly USER_EMAIL_KEY = 'userEmail';
@@ -29,7 +30,7 @@ export class OrderHistoryComp implements OnInit {
     const theEmail = data;
 
     this.orderHistoryService.getOrderHistory(theEmail).subscribe(
-      data => { this.orderHistoryList = data._embedded.orders; }
+      data => { this.orderHistoryList.set(data._embedded.orders); }
     );
   }
 
